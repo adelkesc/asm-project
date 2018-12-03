@@ -28,19 +28,44 @@ ECHO:
 
 ; Loop to listen for input for 20 microseconds
 DELAY_2:
-	DEC R20 ; Decrements R20 for 20 microsecond loop
 	INC R22 ; Increments R22 until R17 pulls high (trig output is detected)
 
 	IN R17, PINB
 	TST R17 ; Tests the zero flag
 	BRNE DISTANCE ; Jumps to the DISTANCE label if the zero flag is false (checking for a 1, zero flag should be true most of the time)
 
+	DEC R20 ; Decrements R20 for 20 microsecond loop
 	BRNE DELAY_2 ; Jumps to DELAY_2 if the zero flag is false (delaying until count reaches zero, zero flag should be false until then)
 	JMP TRIG
 
-DISTANCE:
+TIME:
+	
+	LDI R21, 0xFF ; 255
+	LDI R23, 0x41 ; 65
+	; 255 + 65 = 320 clock cycles
 
-	; Value of R20 / R22
-	; Find the time and make the distance calculation
+	SUB R21, R22
+	ADD R21, R23
+	; R21 should now hold the time in clock cycles taken for the ECHO to pull 1.
+	
+	CLR R23 ; clear R23 for reuse
 
+	; 16 clock cycles = 1 microsecond
+	; Take the value of R21 and divide it by 16 to get the microseconds
+	.DEF NUMERATOR = R21
+	.DEF DENOMINATOR = R23
+	.DEF QUOTIENT = R24
+
+	LDI DENOMINATOR, 16
+	CLR QUOTIENT = R24 
+
+DIVIDE:
+	INC QUOTIENT
+	SUB NUMBERATOR, DENOMINATOR
+	BRCC DIVIDE
+
+	DEC QUOTIENT
+	; The quotient, R24, should now hold the result of the division
+	; The time in microseconds
+	
 MAIN:
