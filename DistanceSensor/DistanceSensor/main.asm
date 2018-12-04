@@ -6,70 +6,45 @@
 ;
 
 ; Main project, Distance Sensor
-; Push Button LED code moved to separate file to prevent accidents.
+
+INIT:
+	LDI R16, 0x01		; Set TRIG pin to high and output signal, pin 1 in port A contains the high signal.
+	LDI R17, 0x00		; Load immediate 0 into R17 as TRIG signal cutoff
+	LDI R18, 0x35		; Load immediate 53 into R18 for 10 microsecond delay counter
+	OUT DDRA, R16		; Set PINA as an output for TRIG
+	OUT DDRC, R17		; Set PINC as an output for the sensor calculation
 
 TRIG:
 ; Outputs signal for 10 microseconds
-	LDI R16, 0x01 ; Set TRIG pin to high and output signal, pin 1 in port A contains the high signal.
-	OUT DDRA, R16 ; port A is TRIG output
-	LDI R18, 0x00 ; zero value to set the trig back to low
-	OUT PORTA, R16
-	LDI R19, 0x35 ; Load immediate 53 into R19 for 10 microsecond delay
-
+	OUT PORTA, R16		; Output R16 to PORTA to start TRIG signal
+	
 ; Loop to output for 10 microseconds
 DELAY_1:
-	DEC R19
-	BRNE DELAY_1
-	OUT PORTA, R18
+	DEC R18				; Decrement R18 counter
+	BRNE DELAY_1		; Branch (if not equal) if the counter is not zero 
+	OUT PORTA, R17		; Output R17 to PORTA to stop TRIG signal
 	
 ECHO:
 ; Receives input from signal sent by TRIG, open for input for 20 microseconds
-	LDI R20, 0x6B ; Load immediate 107 into Register 20
+	LDI R19, 0x6B		; Load immediate 107 into R19 for 20 microsecond delay counter
 
 ; Loop to listen for input for 20 microseconds
 DELAY_2:
-	INC R22 ; Increments R22 until R17 pulls high (trig output is detected)
+	INC R20				; Increments R20 until the DELAY_2 loop stops due to R17 pulling high
+	DEC R19				; Decrement R19 counter
 
-	IN R17, PINB
-	TST R17 ; Tests the zero flag
-	BRNE TIME ; Jumps to the TIME label if the zero flag is false (checking for a 1, zero flag should be true most of the time)
-
-	DEC R20 ; Decrements R20 for 20 microsecond loop
-	BRNE DELAY_2 ; Jumps to DELAY_2 if the zero flag is false (delaying until count reaches zero, zero flag should be false until then)
-	JMP TRIG
-
-TIME:
+	IN R21, PINB		; Input the value of PINB into R21
+	TST R21				; Tests R21 to check if the zero flag is 0
+	BREQ DELAY_2		; Branch (if equal) to the DELAY_2 label if the zero flag is true (z = 1)
 	
-	LDI R21, 0xFF ; 255
-	LDI R23, 0x41 ; 65
-	; 255 + 65 = 320 clock cycles
+	BRNE MAIN			; Branch (if not equal) to MAIN if the zero flag is false (z = 0)
+	JMP INIT			; Jumps to INIT if the DEC R20 counter reaches zero without R17 ever pulling high
 
-	SUB R21, R22
-	ADD R21, R23
-	; R21 should now hold the time in clock cycles taken for the ECHO to pull 1.
-	
-	CLR R23 ; clear R23 for reuse
+; (moved to markdown)
+; If R21 does receive a 1 from PINB then the value in R20 is calculated against the total amount of clock cycles for the ECHO
+; The value of R22 is then divided by 16 to get the quotient, which should be the total clock cycles converted into microseconds
+; (moved to markdown)
 
-	; 16 clock cycles = 1 microsecond
-	; Take the value of R21 and divide it by 16 to get the microseconds
-	.DEF NUMERATOR = R21
-	.DEF DENOMINATOR = R23
-	.DEF QUOTIENT = R24
-
-	LDI DENOMINATOR, 16
-	CLR QUOTIENT
-
-DIVIDE:
-	INC QUOTIENT
-	SUB NUMERATOR, DENOMINATOR
-	BRCC DIVIDE
-
-	DEC QUOTIENT
-	; The quotient, R24, should now hold the result of the division
-	; The time in microseconds
-	
 MAIN:
-	LDI R25, 0xFF
-	OUT DDRC, R25
-	OUT PORTC, R24
-	JMP TRIG
+	OUT PORTC, R21		; Output the value of R21 to PORTC
+	JMP INIT			; Jump to INIT

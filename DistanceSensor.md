@@ -37,5 +37,9 @@ Exception:
 2. System displays the maximum value of its detection range.
 
 
+## Activity Diagram
+![Trigger Sensor](Trigger_Sensor.jpg)
+
+
 ## Test Plan
 The test plan will mostly consist of testing the use cases and making sure that the established requirements have been fulfilled.  Our group will know for certain that the certain components work individually if they generate the expected outputs based on the inputs as described by the requirements and use cases.
