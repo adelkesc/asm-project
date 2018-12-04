@@ -32,7 +32,7 @@ DELAY_2:
 
 	IN R17, PINB
 	TST R17 ; Tests the zero flag
-	BRNE DISTANCE ; Jumps to the DISTANCE label if the zero flag is false (checking for a 1, zero flag should be true most of the time)
+	BRNE TIME ; Jumps to the TIME label if the zero flag is false (checking for a 1, zero flag should be true most of the time)
 
 	DEC R20 ; Decrements R20 for 20 microsecond loop
 	BRNE DELAY_2 ; Jumps to DELAY_2 if the zero flag is false (delaying until count reaches zero, zero flag should be false until then)
@@ -61,7 +61,7 @@ TIME:
 
 DIVIDE:
 	INC QUOTIENT
-	SUB NUMBERATOR, DENOMINATOR
+	SUB NUMERATOR, DENOMINATOR
 	BRCC DIVIDE
 
 	DEC QUOTIENT
@@ -69,3 +69,7 @@ DIVIDE:
 	; The time in microseconds
 	
 MAIN:
+	LDI R25, 0xFF
+	OUT DDRC, R25
+	OUT PORTC, R24
+	JMP TRIG
