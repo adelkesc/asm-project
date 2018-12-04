@@ -31,8 +31,8 @@ Precondition: Trigger Sensor
 2. System detects the obstruction and outputs the distance of the obstruction to a physical display.
 3. User adjusts the distance of the object or themselves.
 4. Return to step 2.
-Exception:
 
+Exception:
 1. User moves object out of the sensor's range.
 2. System displays the maximum value of its detection range.
 
