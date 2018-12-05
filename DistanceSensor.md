@@ -15,19 +15,19 @@ How to make a distance sensor using Assembly that displays the distance of an ob
 
 ## Use Cases
 Trigger Sensor
-1. Move object or self in front of sensor within 3m.
+1. User moves object in front of sensor within 3m.
 2. System detects obstruction of the signal and triggers the buzzer.
-3. Move object or self closer or further away to the ultrasonic sensor.
-4. System detects the distance of the obstruction and adjusts the frequency and pitch of its buzzer blips accordingly.
+3. User moves object closer or further away to the ultrasonic sensor.
+4. System detects the distance of the obstruction and adjusts the frequency and tone of its buzzer blips accordingly.
 
 Exception:
-1. Move the object out of range of the sensor.
+1. User moves the object out of range of the sensor.
 2. System does nothing.
 
 
 Display Distance
 Precondition: Trigger Sensor
-1. Move object or self in front of sensor within 3m.
+1. User moves object in front of sensor within 3m.
 2. System detects the obstruction and outputs the distance of the obstruction to a physical display.
 3. User adjusts the distance of the object or themselves.
 4. Return to step 2.
